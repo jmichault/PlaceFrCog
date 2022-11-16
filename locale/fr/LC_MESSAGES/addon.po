@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gramps 51\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-16 11:29+0100\n"
+"POT-Creation-Date: 2022-11-16 13:23+0100\n"
 "PO-Revision-Date: 2022-11-16 11:30+0100\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -47,20 +47,20 @@ msgstr "Entrez le nom de la commune :"
 msgid "Ŝarĝi per nomo"
 msgstr "Charger par nom"
 
-#: placefrcog.py:137
+#: placefrcog.py:135
 msgid "Nekonato nomo"
 msgstr "Nom inconnu"
 
-#: placefrcog.py:137
+#: placefrcog.py:135
 msgid "Ĉi tiu nomo ne estis trovita en la INSEE-datumbazo: "
 msgstr "Ce nom n'a pas été trouvé dans la base INSEE : "
 
-#: placefrcog.py:142
+#: placefrcog.py:141
 #, python-format
 msgid "%d rezultoj"
 msgstr "%d résultats"
 
-#: placefrcog.py:142
+#: placefrcog.py:141
 #, python-format
 msgid ""
 "Unua rezulto :\n"
@@ -73,28 +73,28 @@ msgstr ""
 "\n"
 "\t\tImporter ?\n"
 
-#: placefrcog.py:143
+#: placefrcog.py:142
 msgid "Ies, Importi"
 msgstr "Oui, importer"
 
-#: placefrcog.py:143
+#: placefrcog.py:142
 msgid "Ne, dankon"
 msgstr "Non merci"
 
-#: placefrcog.py:149
+#: placefrcog.py:148
 #, python-format
 msgid "Aldono de loko kun INSEE-id %s"
 msgstr "Ajout du lieu de code INSEE %s"
 
-#: placefrcog.py:181
+#: placefrcog.py:180
 #, python-format
 msgid "Aldono de loko %s"
 msgstr "Ajout du lieu %s"
 
-#: placefrcog.py:271
+#: placefrcog.py:268
 msgid "Nekonata kodo"
 msgstr "Code inconnu"
 
-#: placefrcog.py:271
+#: placefrcog.py:268
 msgid "Ĉi tiu kodo ne estis trovita en la INSEE-datumbazo: "
 msgstr "Ce code n'a pas été trouvé dans la base INSEE : "

@@ -131,20 +131,19 @@ class PlaceFrCog(Gramplet):
     response = requests.get(geo_url)
     response.raise_for_status()
     json = response.json()
-    print("Entire JSON response")
-    print(json)
     if json == []:
       WarningDialog(_("Nekonato nomo"), _("Ĉi tiu nomo ne estis trovita en la INSEE-datumbazo: ")+lokonomo, parent=self.uistate.window)
       return 
     codDep = json[0]['codeDepartement']
     insee_id = json[0]['code']
     nb = len(json)
-    d = QuestionDialog2(_("%d rezultoj") % (nb), _("Unua rezulto :\n\t%s ; kodo=%s. \n\n\t\tImporti ?\n") % ( json[0]['nom'] , insee_id )
+    if nb >1 :
+      d = QuestionDialog2(_("%d rezultoj") % (nb), _("Unua rezulto :\n\t%s ; kodo=%s. \n\n\t\tImporti ?\n") % ( json[0]['nom'] , insee_id )
                  ,_("Ies, Importi"),_("Ne, dankon")
                  , parent=self.uistate.window)
-    res = d.run()
-    if not res :
-      return
+      res = d.run()
+      if not res :
+        return
 
     with DbTxn(_('Aldono de loko kun INSEE-id %s') % insee_id, self.dbstate.db) as trans:
       place = self.dbstate.db.get_place_from_gramps_id('FrCogCom'+insee_id)
@@ -265,8 +264,6 @@ class PlaceFrCog(Gramplet):
     response = requests.get(geo_url)
     response.raise_for_status()
     json = response.json()
-    print("Entire JSON response")
-    print(json)
     if json == []:
       WarningDialog(_("Nekonata kodo"), _("Ĉi tiu kodo ne estis trovita en la INSEE-datumbazo: ")+insee_id, parent=self.uistate.window)
       return 
