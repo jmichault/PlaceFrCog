@@ -91,21 +91,29 @@ class PlaceFrCog(Gramplet):
     vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
     vbox.set_spacing(4)
 
-    label = Gtk.Label(_('Entrez le N° Insee de la commune : (ou plusieurs numéros séparés par des espaces)'))
+    label = Gtk.Label(_('Enigu la INSEE-numeron de la komunumo: (aŭ plurajn nombrojn apartigitajn per spacoj)'))
     label.set_halign(Gtk.Align.START)
-
     self.entry = Gtk.Entry()
-
     button_box = Gtk.ButtonBox()
     button_box.set_layout(Gtk.ButtonBoxStyle.START)
-
-    get = Gtk.Button(label=_('Charger par le code'))
+    get = Gtk.Button(label=_('Ŝargi per kodo'))
     get.connect("clicked", self.__get_places)
     button_box.add(get)
-
     vbox.pack_start(label, False, True, 0)
     vbox.pack_start(self.entry, False, True, 0)
     vbox.pack_start(button_box, False, True, 0)
+
+    label2 = Gtk.Label(_('Enigu la nomon de la komunumo:'))
+    label2.set_halign(Gtk.Align.START)
+    self.entry2 = Gtk.Entry()
+    button_box2 = Gtk.ButtonBox()
+    button_box2.set_layout(Gtk.ButtonBoxStyle.START)
+    get2 = Gtk.Button(label=_('Ŝarĝi per nomo'))
+    get2.connect("clicked", self.__get_places2)
+    button_box2.add(get2)
+    vbox.pack_start(label2, False, True, 0)
+    vbox.pack_start(self.entry2, False, True, 0)
+    vbox.pack_start(button_box2, False, True, 0)
 
     return vbox
 
@@ -114,6 +122,49 @@ class PlaceFrCog(Gramplet):
     Called to update the display.
     """
     pass
+
+  def __get_places2(self, obj):
+    lokonomo = self.entry2.get_text()
+    #place = self.dbstate.db.get_place_from_gramps_id('FrCogCom'+insee_id)
+    geo_url = 'http://geo.api.gouv.fr/communes?fields=nom,code,centre,codeDepartement,codeRegion&format=json&geometry=centre&nom=' + lokonomo
+
+    response = requests.get(geo_url)
+    response.raise_for_status()
+    json = response.json()
+    print("Entire JSON response")
+    print(json)
+    if json == []:
+      WarningDialog(_("Nekonato nomo"), _("Ĉi tiu nomo ne estis trovita en la INSEE-datumbazo: ")+lokonomo, parent=self.uistate.window)
+      return 
+    codDep = json[0]['codeDepartement']
+    insee_id = json[0]['code']
+    nb = len(json)
+    d = QuestionDialog2(_("%d rezultoj") % (nb), _("Unua rezulto :\n\t%s ; kodo=%s. \n\n\t\tImporti ?\n") % ( json[0]['nom'] , insee_id )
+                 ,_("Ies, Importi"),_("Ne, dankon")
+                 , parent=self.uistate.window)
+    res = d.run()
+    if not res :
+      return
+
+    with DbTxn(_('Aldono de loko kun INSEE-id %s') % insee_id, self.dbstate.db) as trans:
+      place = self.dbstate.db.get_place_from_gramps_id('FrCogCom'+insee_id)
+      if place is None:
+        dep = self.__get_dep(codDep , trans)
+        place = Place()
+        place.gramps_id = 'FrCogCom' + insee_id
+        place_name = PlaceName()
+        place_name.set_value( json[0]['nom'])
+        place.set_name(place_name)
+        place.set_code(insee_id)
+        place.set_title(json[0]['nom'])
+        place.set_longitude(str(json[0]['centre']['coordinates'][0]))
+        place.set_latitude(str(json[0]['centre']['coordinates'][1]))
+        place_type = PlaceType(14)
+        place.set_type(place_type)
+        placeref = PlaceRef()
+        placeref.ref = dep.handle
+        place.add_placeref(placeref)
+        self.dbstate.db.add_place(place, trans)
 
   def __get_places(self, obj):
     insee_id = self.entry.get_text()
@@ -127,7 +178,7 @@ class PlaceFrCog(Gramplet):
     if len(preferred_lang) != 2:
       preferred_lang = 'fr'
 
-    with DbTxn(_('Add Insee-id place %s') % insee_id, self.dbstate.db) as trans:
+    with DbTxn(_('Aldono de loko %s') % insee_id, self.dbstate.db) as trans:
       #print("traitement insee_id : "+insee_id)
       while to_do:
         insee_id = to_do.pop()
@@ -217,7 +268,7 @@ class PlaceFrCog(Gramplet):
     print("Entire JSON response")
     print(json)
     if json == []:
-      WarningDialog(_("Code Inconnu"), _("Ce code n'a pas été trouvé dans la base INSEE : ")+insee_id, parent=self.uistate.window)
+      WarningDialog(_("Nekonata kodo"), _("Ĉi tiu kodo ne estis trovita en la INSEE-datumbazo: ")+insee_id, parent=self.uistate.window)
       return 
     codDep = json[0]['codeDepartement']
     dep = self.__get_dep(codDep , trans)
