@@ -1,0 +1,9 @@
+xgettext --from-code=UTF-8 --no-wrap -k_ -kN_ -o locale/addon.pot *.py 
+sed -i "s/charset=CHARSET/charset=UTF-8/"  locale/addon.pot
+if [ ! -f locale/fr/LC_MESSAGES/addon.po ] ; then
+  msginit --no-wrap --input locale/addon.pot --output locale/fr/LC_MESSAGES/addon.po -lfr --no-translator
+fi
+
+msgmerge --no-wrap -N -U locale/fr/LC_MESSAGES/addon.po locale/addon.pot
+
+msgfmt -f locale/fr/LC_MESSAGES/addon.po -o locale/fr/LC_MESSAGES/addon.mo
